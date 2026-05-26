@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealityCheck AI – Fake News & Misinformation Analyzer</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Living Particle Canvas Background -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Top Glow Spots for Glassmorphism -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation & History Panel -->
+        <aside class="sidebar-panel">
+            <div class="sidebar-header">
+                <div class="logo-wrapper">
+                    <span class="logo-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                    <h1 class="logo-text">RealityCheck <span>AI</span></h1>
+                </div>
+                <p class="logo-subtitle">Fake News & Bias Analyzer</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" id="nav-dashboard-btn">
+                    <i class="fa-solid fa-chart-line"></i> Analysis Deck
+                </button>
+                <button class="nav-btn" id="nav-history-btn">
+                    <i class="fa-solid fa-history"></i> Analysis History (<span id="history-count">0</span>)
+                </button>
+            </nav>
+
+            <div class="sidebar-history-container">
+                <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Scans</h3>
+                <div class="history-list" id="history-items-list">
+                    <div class="empty-history">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <p>No recent analyses. Scanned texts will appear here.</p>
+                    </div>
+                </div>
+                <button class="clear-history-btn" id="clear-history-btn">
+                    <i class="fa-solid fa-trash-can"></i> Clear All History
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span class="status-label">NLP Core Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Deck -->
+        <main class="main-content">
+            <!-- Header Section -->
+            <header class="main-header">
+                <div class="header-welcome">
+                    <h2>Content Verification Terminal</h2>
+                    <p>Harness advanced NLP rules to analyze articles, links, and statements for factual credibility, polarization bias, and clickbait.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Workspace Grid -->
+            <div class="workspace-grid">
+                <!-- Input Deck Card (Glassmorphism) -->
+                <section class="glass-card input-section">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span class="card-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></span>
+                            <h3>New Verification Scan</h3>
+                        </div>
+                        <!-- Toggle Tabs -->
+                        <div class="scan-tabs">
+                            <button class="tab-btn active" id="tab-url-btn"><i class="fa-solid fa-link"></i> Web URL</button>
+                            <button class="tab-btn" id="tab-text-btn"><i class="fa-solid fa-file-text"></i> Plain Text</button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- URL Input Form -->
+                        <div class="input-tab-content active" id="content-url">
+                            <div class="input-group">
+                                <label for="scan-url">Article or News Feed URL</label>
+                                <div class="url-input-wrapper">
+                                    <span class="url-prefix-icon"><i class="fa-solid fa-globe"></i></span>
+                                    <input type="url" id="scan-url" placeholder="https://news-agency.com/breaking-article-url" autocomplete="off">
+                                </div>
+                                <span class="input-tip">Checks domains against reputation list and crawls paragraph blocks for analysis.</span>
+                            </div>
+                        </div>
+
+                        <!-- Plain Text Input Form -->
+                        <div class="input-tab-content" id="content-text">
+                            <div class="input-group">
+                                <label for="scan-text">Headline and Body Paragraphs</label>
+                                <textarea id="scan-text" placeholder="Paste the full article content, political speech, or news statement here to perform full-spectrum syntactic analysis... (Minimum 30 characters)" minlength="30"></textarea>
+                                <div class="textarea-footer">
+                                    <span class="char-count" id="text-char-counter">0 characters</span>
+                                    <span class="input-tip">Analyzes syntactic markers, capitalized yelling, emotional exclamation peaks, and clickbait triggers.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error Banner (initially hidden) -->
+                        <div class="error-banner" id="error-banner">
+                            <span class="error-icon"><i class="fa-solid fa-circle-exclamation"></i></span>
+                            <span class="error-text" id="error-message">Invalid input entered. Please review.</span>
+                            <button class="error-close" id="error-close-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+
+                        <!-- Action Submit Section -->
+                        <div class="action-panel">
+                            <button class="btn btn-primary" id="analyze-submit-btn">
+                                <span class="btn-text">Initiate Verification</span>
+                                <span class="btn-loader hidden"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing...</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Processing Dashboard Loader (Glassmorphism, initially hidden) -->
+                <section class="glass-card loading-card hidden" id="analysis-loading-deck">
+                    <div class="loading-wrapper">
+                        <div class="pulse-ring"></div>
+                        <div class="loading-icon-core"><i class="fa-solid fa-microchip"></i></div>
+                        <h4>Reading Language Vectors</h4>
+                        <p id="loading-subtext">Executing text pattern crawlers and scoring grammar structures...</p>
+                        <div class="loading-bar-container">
+                            <div class="loading-bar-fill"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analysis Results Panel (Glassmorphism, initially hidden) -->
+                <section class="results-layout hidden" id="analysis-results-deck">
+                    <!-- Metrics Row -->
+                    <div class="results-summary-grid">
+                        <!-- Score Meter Card -->
+                        <div class="glass-card metric-card score-gauge-card">
+                            <h4>Credibility Rating</h4>
+                            <div class="gauge-box">
+                                <svg class="gauge-svg" viewBox="0 0 120 120">
+                                    <defs>
+                                        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#ff4757" id="grad-stop-start" />
+                                            <stop offset="100%" stop-color="#2ed573" id="grad-stop-end" />
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
+                                    <circle class="gauge-fill" cx="60" cy="60" r="50" id="results-score-circle"></circle>
+                                </svg>
+                                <div class="gauge-percentage-text">
+                                    <span id="results-score-value">0</span>
+                                    <span class="score-percent">%</span>
+                                </div>
+                            </div>
+                            <div class="score-status-indicator" id="results-score-badge">Highly Credible</div>
+                        </div>
+
+                        <!-- Probability Card -->
+                        <div class="glass-card metric-card">
+                            <h4>Fake Probability</h4>
+                            <div class="large-metric-display text-warning" id="results-fake-prob">
+                                0.0<span class="unit">%</span>
+                            </div>
+                            <p class="metric-desc">Chances of intent to deceive or hyperbole.</p>
+                            <div class="probability-bar-track">
+                                <div class="probability-bar-fill" id="results-fake-bar"></div>
+                            </div>
+                        </div>
+
+                        <!-- Bias Classification Card -->
+                        <div class="glass-card metric-card">
+                            <h4>Bias & Slant Spectrum</h4>
+                            <div class="large-metric-display" id="results-bias-type">Neutral</div>
+                            <p class="metric-desc" id="results-bias-desc">Objective news writing standard.</p>
+                            <div class="bias-indicator-pills">
+                                <span class="bias-pill" id="pill-neutral">Neutral</span>
+                                <span class="bias-pill" id="pill-sensational">Sensationalist</span>
+                                <span class="bias-pill" id="pill-polarized">Highly Polarized</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Highlight & Explanation Row -->
+                    <div class="results-detail-grid">
+                        <!-- Highlighting Viewer Panel -->
+                        <div class="glass-card detail-card main-highlighter-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <span class="card-icon"><i class="fa-solid fa-highlighter"></i></span>
+                                    <h3>Text Highlights Map</h3>
+                                </div>
+                                <span class="badge info-badge" id="results-highlights-badge">0 Flagged Phrases</span>
+                            </div>
+                            <div class="card-body">
+                                <p class="highlighter-instruction">Hover over highlighted words in the report to display NLP linguistic tags detailing the warning categorization.</p>
+                                <div class="highlighter-workspace" id="results-highlighted-text">
+                                    <!-- Dynamic highlighted content injected here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explanation Dashboard Panel -->
+                        <div class="glass-card detail-card explanations-card">
+                            <div class="card-header">
+                                <div class="card-title-group">
+                                    <span class="card-icon"><i class="fa-solid fa-list-check"></i></span>
+                                    <h3>Verification Report Breakdown</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="metadata-banner">
+                                    <div class="metadata-item">
+                                        <span class="meta-label">Reputation:</span>
+                                        <span class="meta-value" id="results-source-label">BBC News</span>
+                                    </div>
+                                    <div class="metadata-item">
+                                        <span class="meta-label">Length:</span>
+                                        <span class="meta-value" id="results-length-label">450 words</span>
+                                    </div>
+                                </div>
+                                <div class="explanation-list" id="results-explanations-list">
+                                    <!-- Dynamic warning checklist elements injected here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <!-- Premium JS Engine -->
+    <script src="app.js"></script>
+</body>
+</html>
